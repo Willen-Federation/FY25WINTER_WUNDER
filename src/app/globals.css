@@ -1,0 +1,54 @@
+:root {
+  --background: #f0f4f8;
+  /* Snow white/blue */
+  --foreground: #1e3c72;
+  /* Deep blue */
+  --primary: #2a5298;
+  --secondary: #aac4e3;
+  --accent: #ff9a9e;
+  /* Warmth */
+  --card-bg: #ffffff;
+  --text-primary: #1e3c72;
+  --text-secondary: #5a6a85;
+  --border: #dde1e6;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  /* Optional Dark Mode - keeping light/wintery for now as per theme "Winter Travel", 
+     usually snow is white, but dark mode could be "Night Skiing".
+     Let's stick to a clean light/blue theme for clarity unless requested.
+  */
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: var(--font-sans);
+  background: var(--background);
+  color: var(--foreground);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+p {
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}

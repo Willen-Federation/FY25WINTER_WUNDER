@@ -1,0 +1,39 @@
+.wrapper {
+    height: calc(100vh - 120px);
+    /* Adjust for header/nav */
+    display: flex;
+    flex-direction: column;
+}
+
+.controls {
+    padding: 10px;
+    background: white;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    z-index: 10;
+}
+
+.btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 10px 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.btn:disabled {
+    opacity: 0.7;
+}
+
+.mapContainer {
+    flex: 1;
+    width: 100%;
+    position: relative;
+}

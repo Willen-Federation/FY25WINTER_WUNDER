@@ -1,0 +1,47 @@
+'use client'
+
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { Home, Wallet, Calendar, MapPin, Settings } from 'lucide-react'
+import styles from './NavBar.module.css'
+import { cn } from '@/lib/utils'
+
+export function NavBar() {
+    const pathname = usePathname()
+
+    // Hide nav on login page
+    if (pathname === '/login') return null
+
+    const navItems = [
+        { href: '/', label: 'Home', icon: Home },
+        { href: '/accounting', label: 'Pay', icon: Wallet },
+        { href: '/itinerary', label: 'Plan', icon: Calendar },
+        { href: '/location', label: 'Map', icon: MapPin },
+        { href: '/admin', label: 'Admin', icon: Settings },
+    ]
+
+    return (
+        <>
+            <div className={styles.spacer} />
+            <nav className={styles.nav}>
+                {navItems.map((item) => {
+                    const Icon = item.icon
+                    const isActive = item.href === '/'
+                        ? pathname === '/'
+                        : pathname.startsWith(item.href)
+
+                    return (
+                        <Link
+                            key={item.href}
+                            href={item.href}
+                            className={cn(styles.item, isActive && styles.active)}
+                        >
+                            <Icon className={styles.icon} size={24} />
+                            <span>{item.label}</span>
+                        </Link>
+                    )
+                })}
+            </nav>
+        </>
+    )
+}
