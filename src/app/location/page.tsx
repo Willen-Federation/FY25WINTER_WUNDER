@@ -3,7 +3,12 @@ import { prisma } from '@/lib/prisma'
 import { LocationClient } from './LocationClient'
 import { formatDistanceToNow } from 'date-fns'
 
-export default async function LocationPage() {
+export default async function LocationPage(
+    props: {
+        searchParams: Promise<{ user?: string }>
+    }
+) {
+    const searchParams = await props.searchParams
     const users = await prisma.user.findMany({
         select: {
             id: true,
@@ -25,5 +30,13 @@ export default async function LocationPage() {
             updatedAt: formatDistanceToNow(u.locationLogs[0].recordedAt, { addSuffix: true })
         }))
 
-    return <LocationClient locations={locations} />
+    let center: [number, number] | undefined
+    if (searchParams.user) {
+        const target = locations.find(l => l.userId === searchParams.user)
+        if (target) {
+            center = [target.lat, target.lng]
+        }
+    }
+
+    return <LocationClient locations={locations} center={center} />
 }

@@ -3,11 +3,14 @@ import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/auth'
 import styles from './home.module.css'
 import Link from 'next/link'
-import { Wallet, Calendar, MapPin } from 'lucide-react'
+import { Wallet, Calendar, User as UserIcon } from 'lucide-react'
 import { format } from 'date-fns'
 
 export default async function Home() {
   const session = await getSession()
+  const users = await prisma.user.findMany({
+    select: { id: true, displayName: true }
+  })
 
   const now = new Date()
   const nextEvent = await prisma.itineraryItem.findFirst({
@@ -49,6 +52,8 @@ export default async function Home() {
         )}
       </section>
 
+
+
       <section className={styles.actions}>
         <Link href="/accounting" className={styles.card}>
           <Wallet size={32} />
@@ -58,10 +63,12 @@ export default async function Home() {
           <Calendar size={32} />
           <span>Plan</span>
         </Link>
-        <Link href="/location" className={styles.card}>
-          <MapPin size={32} />
-          <span>Map</span>
-        </Link>
+        {users.map(user => (
+          <Link key={user.id} href={`/location?user=${user.id}`} className={styles.card}>
+            <UserIcon size={32} />
+            <span style={{ fontSize: '0.8rem', textAlign: 'center' }}>{user.displayName}の位置情報</span>
+          </Link>
+        ))}
       </section>
     </div>
   )

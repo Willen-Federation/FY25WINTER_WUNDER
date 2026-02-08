@@ -13,9 +13,10 @@ const Map = dynamic(() => import('@/components/Map'), {
 
 interface Props {
     locations: any[]
+    center?: [number, number]
 }
 
-export function LocationClient({ locations }: Props) {
+export function LocationClient({ locations, center }: Props) {
     const [loading, setLoading] = useState(false)
 
     const handleManualLocation = () => {
@@ -55,7 +56,7 @@ export function LocationClient({ locations }: Props) {
                 </button>
             </div>
             <div className={styles.mapContainer}>
-                <Map locations={locations} />
+                <Map locations={locations} center={center} />
             </div>
         </div>
     )
