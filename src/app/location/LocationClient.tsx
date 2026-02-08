@@ -8,7 +8,7 @@ import { MapPin } from 'lucide-react'
 
 const Map = dynamic(() => import('@/components/Map'), {
     ssr: false,
-    loading: () => <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading Map...</div>
+    loading: () => <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>読み込み中...</div>
 })
 
 interface Props {
@@ -21,7 +21,7 @@ export function LocationClient({ locations, center }: Props) {
 
     const handleManualLocation = () => {
         if (!navigator.geolocation) {
-            alert('Geolocation is not supported by your browser')
+            alert('お使いのブラウザは位置情報をサポートしていません')
             return
         }
         setLoading(true)
@@ -31,7 +31,7 @@ export function LocationClient({ locations, center }: Props) {
             setLoading(false)
         }, (err) => {
             console.error(err)
-            alert('Failed to get location')
+            alert('位置情報の取得に失敗しました')
             setLoading(false)
         })
     }
@@ -52,7 +52,7 @@ export function LocationClient({ locations, center }: Props) {
             <div className={styles.controls}>
                 <button className={styles.btn} onClick={handleManualLocation} disabled={loading}>
                     <MapPin size={20} />
-                    {loading ? 'Locating...' : "I'm Here!"}
+                    {loading ? '測位中...' : "現在地を更新"}
                 </button>
             </div>
             <div className={styles.mapContainer}>

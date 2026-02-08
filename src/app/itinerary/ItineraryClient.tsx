@@ -68,10 +68,10 @@ export function ItineraryClient({ days }: Props) {
 
             <div className={styles.grid}>
                 <div className={cn(styles.editorSection, styles.pcOnly)}>
-                    <h3>Editor (Markdown)</h3>
+                    <h3>エディタ (Markdown)</h3>
                     <p className={styles.meta}>
-                        Format: ## HH:MM [Title]<br />
-                        Example: ## 12:00 Lunch
+                        記述形式: ## HH:MM [タイトル]<br />
+                        例: ## 12:00 ランチ
                     </p>
                     <textarea
                         key={activeDay} // Reset content on day switch
@@ -85,19 +85,19 @@ export function ItineraryClient({ days }: Props) {
                         onClick={() => handleSave(markdown)} // Use current state
                         disabled={isSaving}
                     >
-                        {isSaving ? 'Saving...' : 'Save & Update'}
+                        {isSaving ? '保存中...' : '保存 & 更新'}
                     </button>
 
                     {currentDayData?.lastEditor && (
                         <div className={styles.meta}>
-                            Last edited by {currentDayData.lastEditor}
-                            {currentDayData.updatedAt && ` at ${format(new Date(currentDayData.updatedAt), 'MM/dd HH:mm')}`}
+                            最終更新者: {currentDayData.lastEditor}
+                            {currentDayData.updatedAt && ` (${format(new Date(currentDayData.updatedAt), 'MM/dd HH:mm')})`}
                         </div>
                     )}
                 </div>
 
                 <div className={styles.timeline}>
-                    <h3>Timeline</h3>
+                    <h3>タイムライン</h3>
                     {currentDayData?.items && currentDayData.items.length > 0 ? (
                         currentDayData.items.map((item) => (
                             <div key={item.id} className={styles.timelineItem}>
@@ -110,7 +110,7 @@ export function ItineraryClient({ days }: Props) {
                             </div>
                         ))
                     ) : (
-                        <div className={styles.emptyState}>No events planned yet.</div>
+                        <div className={styles.emptyState}>まだ予定がありません。</div>
                     )}
                 </div>
             </div>

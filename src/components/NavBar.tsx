@@ -13,11 +13,11 @@ export function NavBar() {
     if (pathname === '/login') return null
 
     const navItems = [
-        { href: '/', label: 'Home', icon: Home },
-        { href: '/accounting', label: 'Pay', icon: Wallet },
-        { href: '/itinerary', label: 'Plan', icon: Calendar },
-        { href: '/location', label: 'Map', icon: MapPin },
-        { href: '/admin', label: 'Admin', icon: Settings },
+        { href: '/', label: 'ホーム', icon: Home },
+        { href: '/accounting', label: '立替', icon: Wallet },
+        { href: '/itinerary', label: '計画', icon: Calendar },
+        { href: '/location', label: 'マップ', icon: MapPin },
+        { href: '/admin', label: '管理', icon: Settings },
     ]
 
     return (

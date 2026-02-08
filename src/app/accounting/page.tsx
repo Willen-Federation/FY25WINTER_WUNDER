@@ -44,7 +44,7 @@ export default async function AccountingPage() {
 
     return (
         <div className={styles.container}>
-            <h1 className={styles.header}>Accounting & Settlement 💰</h1>
+            <h1 className={styles.header}>会計 & 精算 💰</h1>
 
             <section className={styles.summaryGrid}>
                 {balances.map(u => (
@@ -54,7 +54,7 @@ export default async function AccountingPage() {
                             {u.net > 0 ? '+' : ''}{u.net.toLocaleString()}
                         </div>
                         <div style={{ fontSize: '0.8rem', color: '#888' }}>
-                            {u.net > 0 ? 'Receives' : u.net < 0 ? 'Owes' : 'Settled'}
+                            {u.net > 0 ? '受取' : u.net < 0 ? '支払' : '精算済'}
                         </div>
                     </div>
                 ))}

@@ -57,7 +57,7 @@ export default function Map({ locations, center }: Props) {
                 <Marker key={loc.userId} position={[loc.lat, loc.lng]} icon={defaultIcon}>
                     <Popup>
                         <strong>{loc.displayName}</strong><br />
-                        Last seen: {loc.updatedAt}
+                        最終確認: {loc.updatedAt}
                     </Popup>
                 </Marker>
             ))}

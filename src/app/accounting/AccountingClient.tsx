@@ -117,7 +117,7 @@ export function AccountingClient({ users, currentUserIdentity, expenses }: Props
     }
 
     const handleDelete = async () => {
-        if (!selectedId || !confirm('Are you sure you want to delete this expense?')) return
+        if (!selectedId || !confirm('この立替記録を削除しますか？')) return
 
         setIsSubmitting(true)
         const formData = new FormData()
@@ -130,26 +130,26 @@ export function AccountingClient({ users, currentUserIdentity, expenses }: Props
         if (res?.success) {
             setIsOpen(false)
         } else {
-            alert(res?.error || 'Failed to delete')
+            alert(res?.error || '削除に失敗しました')
         }
     }
 
     return (
         <>
-            <div className={styles.sectionTitle}>Recent Expenses</div>
+            <div className={styles.sectionTitle}>最近の立替</div>
             <div className={styles.expenseList}>
                 {expenses.length > 0 ? expenses.map(e => (
                     <div key={e.id} className={styles.expenseItem} onClick={() => handleEdit(e)} style={{ cursor: 'pointer' }}>
                         <div>
                             <div className={styles.expenseTitle}>{e.title}</div>
                             <div className={styles.expenseMeta}>
-                                Paid by {e.payer.displayName} • {format(new Date(e.createdAt), 'MM/dd')}
+                                支払者: {e.payer.displayName} • {format(new Date(e.createdAt), 'MM/dd')}
                             </div>
                         </div>
                         <div className={styles.expenseAmount}>¥{e.amount.toLocaleString()}</div>
                     </div>
                 )) : (
-                    <div style={{ color: '#888', textAlign: 'center' }}>No expenses yet.</div>
+                    <div style={{ color: '#888', textAlign: 'center' }}>立替記録なし</div>
                 )}
             </div>
 
@@ -160,21 +160,21 @@ export function AccountingClient({ users, currentUserIdentity, expenses }: Props
             {isOpen && (
                 <div className={styles.modalOverlay}>
                     <div className={styles.modalContent}>
-                        <h3>{editMode ? 'Edit Expense' : 'Add Expense'}</h3>
+                        <h3>{editMode ? '立替の編集' : '立替の追加'}</h3>
                         <form onSubmit={handleSubmit}>
                             <div className={styles.formGroup}>
-                                <label className={styles.label}>Title</label>
+                                <label className={styles.label}>タイトル</label>
                                 <input
                                     className={styles.input}
                                     required
                                     value={title}
                                     onChange={e => setTitle(e.target.value)}
-                                    placeholder="Dinner, Taxi, etc."
+                                    placeholder="夕食、タクシー代など"
                                 />
                             </div>
 
                             <div className={styles.formGroup}>
-                                <label className={styles.label}>Total Amount (¥)</label>
+                                <label className={styles.label}>金額 (円)</label>
                                 <input
                                     type="number"
                                     className={styles.input}
@@ -189,7 +189,7 @@ export function AccountingClient({ users, currentUserIdentity, expenses }: Props
                             </div>
 
                             <div className={styles.formGroup}>
-                                <label className={styles.label}>Paid By</label>
+                                <label className={styles.label}>支払者</label>
                                 <select
                                     className={styles.select}
                                     value={payerId}
@@ -203,8 +203,8 @@ export function AccountingClient({ users, currentUserIdentity, expenses }: Props
 
                             <div className={styles.formGroup}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                                    <label className={styles.label}>Splits</label>
-                                    <button type="button" onClick={distributeEvenly} style={{ fontSize: '0.8rem', cursor: 'pointer' }}>Reset Evenly</button>
+                                    <label className={styles.label}>割り勘</label>
+                                    <button type="button" onClick={distributeEvenly} style={{ fontSize: '0.8rem', cursor: 'pointer' }}>等分にリセット</button>
                                 </div>
                                 {users.map(u => (
                                     <div key={u.id} className={styles.splitRow}>
@@ -219,7 +219,7 @@ export function AccountingClient({ users, currentUserIdentity, expenses }: Props
                                     </div>
                                 ))}
                                 <div style={{ textAlign: 'right', fontSize: '0.8rem', marginTop: 5, color: Object.values(splits).reduce((a, b) => a + b, 0) != parseInt(amount) ? 'red' : 'inherit' }}>
-                                    Total: {Object.values(splits).reduce((a, b) => a + b, 0)} / {amount || 0}
+                                    合計: {Object.values(splits).reduce((a, b) => a + b, 0)} / {amount || 0}
                                 </div>
                             </div>
 
@@ -229,9 +229,9 @@ export function AccountingClient({ users, currentUserIdentity, expenses }: Props
                                         <Trash2 size={16} />
                                     </button>
                                 )}
-                                <button type="button" className={styles.cancelBtn} onClick={() => setIsOpen(false)}>Cancel</button>
+                                <button type="button" className={styles.cancelBtn} onClick={() => setIsOpen(false)}>キャンセル</button>
                                 <button type="submit" className={styles.submitBtn} disabled={isSubmitting}>
-                                    {isSubmitting ? 'Saving...' : 'Save'}
+                                    {isSubmitting ? '保存中...' : '保存'}
                                 </button>
                             </div>
                         </form>

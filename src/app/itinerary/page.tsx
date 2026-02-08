@@ -37,7 +37,7 @@ export default async function ItineraryPage() {
 
     return (
         <div className={styles.container}>
-            <h1 className={styles.title}>Itinerary Plan 📅</h1>
+            <h1 className={styles.title}>旅の計画 📅</h1>
             <ItineraryClient days={days} />
         </div>
     )

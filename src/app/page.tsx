@@ -28,26 +28,26 @@ export default async function Home() {
     <div className={styles.container}>
       <header className={styles.header}>
         <div className={styles.greeting}>
-          <h1>Hello, {session?.displayName || 'Traveler'}! ❄️</h1>
-          <p>Ready for the Winter Event?</p>
+          <h1>こんにちは, {session?.displayName || 'Traveler'}! ❄️</h1>
+          <p>冬のイベントを楽しもう！</p>
         </div>
       </header>
 
       <section className={styles.nextEvent}>
-        <h2>Next Schedule</h2>
+        <h2>次の予定</h2>
         {nextEvent ? (
           <div className={styles.eventCard}>
             <div className={styles.time}>
               {nextEvent.startTime ? format(nextEvent.startTime, 'MM/dd HH:mm') : '??:??'}
             </div>
             <div className={styles.title}>{nextEvent.title}</div>
-            <div className={styles.desc}>{nextEvent.content || 'No details'}</div>
+            <div className={styles.desc}>{nextEvent.content || '詳細なし'}</div>
           </div>
         ) : (
           <div className={styles.eventCard}>
             <div className={styles.time}>--:--</div>
-            <div className={styles.title}>No upcoming events</div>
-            <div className={styles.desc}>Check the plan to add events!</div>
+            <div className={styles.title}>予定なし</div>
+            <div className={styles.desc}>プランを確認して予定を追加しましょう！</div>
           </div>
         )}
       </section>
@@ -57,11 +57,11 @@ export default async function Home() {
       <section className={styles.actions}>
         <Link href="/accounting" className={styles.card}>
           <Wallet size={32} />
-          <span>Pay</span>
+          <span>立替</span>
         </Link>
         <Link href="/itinerary" className={styles.card}>
           <Calendar size={32} />
-          <span>Plan</span>
+          <span>計画</span>
         </Link>
         {users.map(user => (
           <Link key={user.id} href={`/location?user=${user.id}`} className={styles.card}>
