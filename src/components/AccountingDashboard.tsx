@@ -1,11 +1,12 @@
 
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import useSWR from 'swr'
 import styles from '@/app/accounting/accounting.module.css'
 import { AccountingClient } from '@/app/accounting/AccountingClient'
 import LoadingIndicator from './LoadingIndicator'
+import OfflineWarning from './OfflineWarning'
 
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
@@ -38,6 +39,7 @@ export default function AccountingDashboard() {
 
     return (
         <div className={styles.container}>
+            {error && <OfflineWarning />}
             <h1 className={styles.header}>会計 & 精算 💰</h1>
 
             <section className={styles.summaryGrid}>

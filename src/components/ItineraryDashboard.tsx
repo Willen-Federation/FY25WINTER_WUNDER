@@ -1,11 +1,12 @@
 
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import useSWR from 'swr'
 import styles from '@/app/itinerary/itinerary.module.css'
 import { ItineraryClient } from '@/app/itinerary/ItineraryClient'
 import LoadingIndicator from './LoadingIndicator'
+import OfflineWarning from './OfflineWarning'
 
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
@@ -38,6 +39,7 @@ export default function ItineraryDashboard() {
 
     return (
         <div className={styles.container}>
+            {error && <OfflineWarning />}
             <h1 className={styles.title}>旅の計画 📅</h1>
             <ItineraryClient days={days || []} />
         </div>

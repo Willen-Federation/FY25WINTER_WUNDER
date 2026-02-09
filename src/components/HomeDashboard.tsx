@@ -8,6 +8,7 @@ import { Wallet, Calendar, User as UserIcon } from 'lucide-react'
 import NextEventCard from '@/app/NextEventCard'
 import styles from '@/app/home.module.css'
 import LoadingIndicator from './LoadingIndicator'
+import OfflineWarning from './OfflineWarning'
 
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
@@ -49,6 +50,7 @@ export default function HomeDashboard({ session }: { session: any }) {
 
     return (
         <div className={styles.container}>
+            {error && <OfflineWarning />}
             <header className={styles.header}>
                 <div className={styles.greeting}>
                     <h1>こんにちは, {session?.displayName || 'Traveler'}! ❄️</h1>
