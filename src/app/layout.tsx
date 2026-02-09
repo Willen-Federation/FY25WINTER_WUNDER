@@ -23,10 +23,7 @@ export const metadata: Metadata = {
   title: "Winter Travel Event 2026",
   description: "Winter Wunder Travel App",
   manifest: "/manifest.webmanifest",
-  icons: {
-    icon: "/icon.png",
-    apple: "/apple-icon.png",
-  },
+
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
