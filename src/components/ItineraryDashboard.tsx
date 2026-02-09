@@ -10,16 +10,17 @@ import LoadingIndicator from './LoadingIndicator'
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
 export default function ItineraryDashboard() {
-    const [cachedData, setCachedData] = useState<any>(null)
-
-    useEffect(() => {
-        try {
-            const saved = localStorage.getItem('itinerary-data')
-            if (saved) setCachedData(JSON.parse(saved))
-        } catch (e) {
-            console.error('Failed to load cache', e)
+    const [cachedData, setCachedData] = useState<any>(() => {
+        if (typeof window !== 'undefined') {
+            try {
+                const saved = localStorage.getItem('itinerary-data')
+                return saved ? JSON.parse(saved) : null
+            } catch (e) {
+                console.error('Failed to load cache', e)
+            }
         }
-    }, [])
+        return null
+    })
 
     const { data, error } = useSWR('/api/itinerary', fetcher, {
         fallbackData: cachedData,

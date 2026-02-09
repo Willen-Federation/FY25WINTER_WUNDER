@@ -12,19 +12,17 @@ import LoadingIndicator from './LoadingIndicator'
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
 export default function HomeDashboard({ session }: { session: any }) {
-    const [cachedData, setCachedData] = useState<any>(null)
-
-    // Load initial data from localStorage for immediate display
-    useEffect(() => {
-        try {
-            const saved = localStorage.getItem('home-data')
-            if (saved) {
-                setCachedData(JSON.parse(saved))
+    const [cachedData, setCachedData] = useState<any>(() => {
+        if (typeof window !== 'undefined') {
+            try {
+                const saved = localStorage.getItem('home-data')
+                return saved ? JSON.parse(saved) : null
+            } catch (e) {
+                console.error('Failed to load cache', e)
             }
-        } catch (e) {
-            console.error('Failed to load cache', e)
         }
-    }, [])
+        return null
+    })
 
     const { data, error, isLoading } = useSWR('/api/home-data', fetcher, {
         fallbackData: cachedData,
