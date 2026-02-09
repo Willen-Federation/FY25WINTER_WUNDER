@@ -5,6 +5,7 @@ import styles from './home.module.css'
 import Link from 'next/link'
 import { Wallet, Calendar, User as UserIcon } from 'lucide-react'
 import { format } from 'date-fns'
+import NextEventCard from './NextEventCard'
 
 export default async function Home() {
   const session = await getSession()
@@ -24,6 +25,13 @@ export default async function Home() {
     }
   })
 
+  // Format dates for Client Component
+  const formattedEvent = nextEvent ? {
+    ...nextEvent,
+    startTime: nextEvent.startTime?.toISOString() ?? null,
+    endTime: nextEvent.endTime?.toISOString() ?? null,
+  } : null
+
   return (
     <div className={styles.container}>
       <header className={styles.header}>
@@ -35,21 +43,7 @@ export default async function Home() {
 
       <section className={styles.nextEvent}>
         <h2>次の予定</h2>
-        {nextEvent ? (
-          <div className={styles.eventCard}>
-            <div className={styles.time}>
-              {nextEvent.startTime ? format(nextEvent.startTime, 'MM/dd HH:mm') : '??:??'}
-            </div>
-            <div className={styles.title}>{nextEvent.title}</div>
-            <div className={styles.desc}>{nextEvent.content || '詳細なし'}</div>
-          </div>
-        ) : (
-          <div className={styles.eventCard}>
-            <div className={styles.time}>--:--</div>
-            <div className={styles.title}>予定なし</div>
-            <div className={styles.desc}>プランを確認して予定を追加しましょう！</div>
-          </div>
-        )}
+        <NextEventCard nextEvent={formattedEvent} />
       </section>
 
 

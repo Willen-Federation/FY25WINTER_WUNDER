@@ -11,6 +11,9 @@
     text-align: center;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
     z-index: 10;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
 }
 
 .btn {
@@ -18,14 +21,25 @@
     color: white;
     border: none;
     border-radius: 25px;
-    padding: 10px 25px;
-    font-size: 1rem;
+    padding: 10px 20px;
+    font-size: 0.9rem;
     font-weight: 600;
     display: inline-flex;
     align-items: center;
     gap: 8px;
     cursor: pointer;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.btn:active {
+    transform: scale(0.95);
+}
+
+.btn.secondary {
+    background: white;
+    border: 2px solid var(--primary);
+    color: var(--primary);
 }
 
 .btn:disabled {

@@ -6,7 +6,7 @@ import { Home, Wallet, Calendar, MapPin, Settings } from 'lucide-react'
 import styles from './NavBar.module.css'
 import { cn } from '@/lib/utils'
 
-export function NavBar() {
+export function NavBar({ role }: { role?: string }) {
     const pathname = usePathname()
 
     // Hide nav on login page
@@ -17,8 +17,11 @@ export function NavBar() {
         { href: '/accounting', label: '立替', icon: Wallet },
         { href: '/itinerary', label: '計画', icon: Calendar },
         { href: '/location', label: 'マップ', icon: MapPin },
-        { href: '/admin', label: '管理', icon: Settings },
     ]
+
+    if (role === 'ADMIN') {
+        navItems.push({ href: '/admin', label: '管理', icon: Settings })
+    }
 
     return (
         <>

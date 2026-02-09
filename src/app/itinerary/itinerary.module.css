@@ -94,32 +94,43 @@
 /* Timeline */
 .timeline {
     position: relative;
-    padding-left: 20px;
-    /* Space for line if needed */
+    padding-left: 10px;
 }
 
 .timelineItem {
-    margin-bottom: 20px;
-    border-left: 3px solid var(--secondary);
-    padding-left: 15px;
+    margin-bottom: 25px;
+    border-left: 2px solid var(--secondary);
+    padding-left: 25px;
     position: relative;
+    padding-bottom: 5px;
+    border-radius: 4px;
+    /* Slight radius */
+    transition: background-color 0.2s;
+    cursor: pointer;
+}
+
+.timelineItem:hover {
+    background-color: rgba(0, 0, 0, 0.03);
 }
 
 .timelineItem::before {
     content: '';
     position: absolute;
-    left: -8px;
+    left: -7px;
     top: 0;
-    width: 13px;
-    height: 13px;
+    width: 12px;
+    height: 12px;
     background: var(--primary);
     border-radius: 50%;
+    border: 2px solid white;
 }
 
 .itemTime {
     font-size: 0.9rem;
     font-weight: 700;
     color: var(--primary);
+    line-height: 1;
+    margin-bottom: 5px;
 }
 
 .itemTitle {
@@ -128,10 +139,35 @@
     margin: 4px 0;
 }
 
+.timelineItem:hover .itemTitle {
+    color: var(--secondary);
+    text-decoration: underline;
+}
+
 .itemContent {
     font-size: 0.95rem;
     color: var(--text-secondary);
-    white-space: pre-wrap;
+    /* content hidden by default or truncated? No, request says click to see details modal. */
+    /* So usually maybe truncate or hide? But user said "scheduled content should appear in modal". 
+       Maybe hiding content in list view is desired? Or just showing summary?
+       "予定をクリックしたら、その内容がモーダルで表示され" implies details are in modal.
+       So let's clamp lines or hide detailed content if it's too long?
+       For now, let's keep content visible but maybe limited?
+       Let's stick to styling tweaks first.
+    */
+    display: none;
+    /* Hide content in list, show in modal only? */
+}
+
+.itemContent p {
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.itemContent ul,
+.itemContent ol {
+    margin-left: 20px;
+    margin-bottom: 8px;
 }
 
 .emptyState {
@@ -152,4 +188,32 @@
     .pcOnly {
         display: none;
     }
+}
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.modalContent {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
 }

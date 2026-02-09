@@ -5,6 +5,8 @@ import styles from './itinerary.module.css'
 import { saveItineraryAction } from '@/actions/itinerary'
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 interface ItineraryItemProps {
     id: string
@@ -47,6 +49,10 @@ export function ItineraryClient({ days }: Props) {
         setIsSaving(false)
     }
 
+    const [selectedItem, setSelectedItem] = useState<ItineraryItemProps | null>(null)
+
+    // ...
+
     return (
         <div>
             <div className={styles.tabs}>
@@ -56,7 +62,6 @@ export function ItineraryClient({ days }: Props) {
                         className={cn(styles.tab, activeDay === d && styles.active)}
                         onClick={() => {
                             setActiveDay(d)
-                            // Update local markdown from props
                             const dData = days.find(day => day.day === d)
                             setMarkdown(dData?.markdown || '')
                         }}
@@ -74,20 +79,18 @@ export function ItineraryClient({ days }: Props) {
                         例: ## 12:00 ランチ
                     </p>
                     <textarea
-                        key={activeDay} // Reset content on day switch
+                        key={activeDay}
                         className={styles.textarea}
                         defaultValue={days.find(d => d.day === activeDay)?.markdown || ''}
                         onChange={(e) => setMarkdown(e.target.value)}
-                    // Note: defaultValue used combined with key. onBlur or Button to save.
                     />
                     <button
                         className={styles.saveButton}
-                        onClick={() => handleSave(markdown)} // Use current state
+                        onClick={() => handleSave(markdown)}
                         disabled={isSaving}
                     >
                         {isSaving ? '保存中...' : '保存 & 更新'}
                     </button>
-
                     {currentDayData?.lastEditor && (
                         <div className={styles.meta}>
                             最終更新者: {currentDayData.lastEditor}
@@ -100,13 +103,12 @@ export function ItineraryClient({ days }: Props) {
                     <h3>タイムライン</h3>
                     {currentDayData?.items && currentDayData.items.length > 0 ? (
                         currentDayData.items.map((item) => (
-                            <div key={item.id} className={styles.timelineItem}>
+                            <div key={item.id} className={styles.timelineItem} onClick={() => setSelectedItem(item)} style={{ cursor: 'pointer' }}>
                                 <div className={styles.itemTime}>
                                     {item.startTime ? format(new Date(item.startTime), 'HH:mm') : '??:??'}
                                     {item.endTime ? ` - ${format(new Date(item.endTime), 'HH:mm')}` : ''}
                                 </div>
                                 <div className={styles.itemTitle}>{item.title}</div>
-                                {item.content && <div className={styles.itemContent}>{item.content}</div>}
                             </div>
                         ))
                     ) : (
@@ -114,6 +116,33 @@ export function ItineraryClient({ days }: Props) {
                     )}
                 </div>
             </div>
+
+            {selectedItem && (
+                <div className={styles.modalOverlay} onClick={() => setSelectedItem(null)}>
+                    <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15, borderBottom: '1px solid #eee', paddingBottom: 10 }}>
+                            <h3 style={{ margin: 0, color: 'var(--primary)' }}>{selectedItem.title}</h3>
+                            <button onClick={() => setSelectedItem(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.5rem' }}>&times;</button>
+                        </div>
+
+                        <div style={{ marginBottom: 15, fontWeight: 'bold', color: '#666' }}>
+                            {selectedItem.startTime ? format(new Date(selectedItem.startTime), 'HH:mm') : '??:??'}
+                            {selectedItem.endTime ? ` - ${format(new Date(selectedItem.endTime), 'HH:mm')}` : ''}
+                        </div>
+
+                        <div className={styles.itemContent} style={{ display: 'block', maxHeight: '60vh', overflowY: 'auto' }}>
+                            <ReactMarkdown
+                                remarkPlugins={[remarkGfm]}
+                                components={{
+                                    a: ({ node, ...props }) => <a {...props} target="_blank" rel="noopener noreferrer" style={{ color: '#3b82f6', textDecoration: 'underline' }} />
+                                }}
+                            >
+                                {selectedItem.content || ''}
+                            </ReactMarkdown>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
