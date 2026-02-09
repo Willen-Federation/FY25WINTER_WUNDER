@@ -7,6 +7,7 @@ import { getSession } from "@/lib/auth";
 import { SWRegister } from "@/components/SWRegister";
 import CacheWarming from "@/components/CacheWarming";
 import { InstallPrompt } from "@/components/InstallPrompt";
+import OfflineNavigationGuard from "@/components/OfflineNavigationGuard";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -54,7 +55,9 @@ export default async function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <div className="main-content">
-          {children}
+          <OfflineNavigationGuard>
+            {children}
+          </OfflineNavigationGuard>
         </div>
         <NavBar role={session?.role} />
         <SWRegister />

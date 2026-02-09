@@ -12,7 +12,9 @@ export async function middleware(request: NextRequest) {
         pathname.startsWith('/static') ||
         pathname.startsWith('/api/') || // Use specific API Auth check if needed, but generic /api is usually fine for now
         pathname === '/favicon.ico' ||
-        pathname === '/manifest.webmanifest'
+        pathname === '/manifest.webmanifest' ||
+        pathname === '/sw.js' ||
+        pathname.startsWith('/workbox-')
     ) {
         return NextResponse.next()
     }
