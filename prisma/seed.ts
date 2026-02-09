@@ -10,7 +10,9 @@ async function main() {
     // 1. Create Users
     const admin = await prisma.user.upsert({
         where: { username: 'admin' },
-        update: {},
+        update: {
+            passwordHash, // Update password even if exists (though we reset DB usually)
+        },
         create: {
             username: 'admin',
             passwordHash,
@@ -19,6 +21,7 @@ async function main() {
             iconUrl: '/avatars/admin.png', // Placeholder
         },
     })
+    console.log('Admin user ensured: admin / password')
 
     const user1 = await prisma.user.upsert({
         where: { username: 'user1' },
