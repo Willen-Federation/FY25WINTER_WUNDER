@@ -1,9 +1,10 @@
 
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { NavBar } from "@/components/NavBar";
 import { getSession } from "@/lib/auth";
+import { SWRegister } from "@/components/SWRegister";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,6 +19,22 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Winter Travel Event 2026",
   description: "Winter Wunder Travel App",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Winter Wunder",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#3b82f6",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default async function RootLayout({
@@ -34,6 +51,7 @@ export default async function RootLayout({
           {children}
         </div>
         <NavBar role={session?.role} />
+        <SWRegister />
       </body>
     </html>
   );
