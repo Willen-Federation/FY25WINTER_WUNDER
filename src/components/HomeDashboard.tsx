@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { Wallet, Calendar, User as UserIcon } from 'lucide-react'
 import NextEventCard from '@/app/NextEventCard'
 import styles from '@/app/home.module.css'
+import LoadingIndicator from './LoadingIndicator'
 
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
@@ -45,6 +46,8 @@ export default function HomeDashboard({ session }: { session: any }) {
         startTime: nextEvent.startTime, // Should be string from JSON
         endTime: nextEvent.endTime,
     } : null
+
+    if (!cachedData && !data) return <LoadingIndicator />
 
     return (
         <div className={styles.container}>

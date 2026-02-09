@@ -8,11 +8,14 @@ const initialState = {
     error: '',
 }
 
+import LoadingIndicator from '@/components/LoadingIndicator'
+
 export default function LoginPage() {
     const [state, formAction, isPending] = useActionState(loginAction, initialState)
 
     return (
         <div className={styles.container}>
+            {isPending && <LoadingIndicator />}
             <div className={styles.card}>
                 <h1 className={styles.title}>Winter Login ❄️</h1>
 
