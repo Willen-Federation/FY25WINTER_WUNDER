@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "cp prisma/schema.prisma.backup prisma/schema.prisma 2>/dev/null || : && prisma generate && next build",
-    "build:prod": "export DATABASE_URL=${DATABASE_URL:-$NETLIFY_DATABASE_URL} && cp prisma/schema.postgres.prisma prisma/schema.prisma && prisma generate && prisma db push --force-reset --accept-data-loss && prisma db seed && next build",
+    "build:prod": "cp prisma/schema.postgres.prisma prisma/schema.prisma && prisma generate && prisma db push --force-reset --accept-data-loss && prisma db seed && next build",
     "start": "next start",
     "lint": "eslint",
     "postinstall": "prisma generate",
