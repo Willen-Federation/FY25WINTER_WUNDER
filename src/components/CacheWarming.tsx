@@ -10,6 +10,10 @@ export default function CacheWarming() {
         // Only run if service worker is active (or compatible)
         if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
             const warmCache = async () => {
+                // Wait for the service worker to be ready (controlling the page)
+                // This ensures the fetch requests are intercepted and cached by the SW
+                await navigator.serviceWorker.ready
+
                 const routes = [
                     '/accounting',
                     '/itinerary',
@@ -27,9 +31,9 @@ export default function CacheWarming() {
 
                         // Fetch the HTML page explicitly (Client -> Server: full page load request)
                         // This populates the SW Cache due to our updated next.config.ts rule
-                        // priority: 'low' is a hint to the browser to not block critical resources
+                        // credentials: 'include' ensures we don't get redirected to /login if authenticated
                         // @ts-ignore - priority is valid in modern browsers
-                        await fetch(route, { priority: 'low' })
+                        await fetch(route, { priority: 'low', credentials: 'include' })
                     } catch (e) {
                         // Ignore errors (e.g. if already offline)
                         console.debug(`Failed to warm cache for ${route}`, e)
