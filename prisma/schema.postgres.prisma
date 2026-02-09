@@ -1,0 +1,76 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  username     String   @unique
+  passwordHash String
+  displayName  String
+  iconUrl      String?
+  role         String   @default("USER") // ADMIN or USER
+
+  expensesPaid   Expense[]      @relation("Payer")
+  expenseSplits  ExpenseSplit[]
+  locationLogs   LocationLog[]
+  itineraryEdits ItineraryDay[]
+}
+
+model Expense {
+  id        String   @id @default(uuid())
+  title     String
+  amount    Int
+  payerId   String
+  payer     User     @relation("Payer", fields: [payerId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  category  String   @default("その他")
+  receiptUrl String?
+
+  splits ExpenseSplit[]
+}
+
+model ExpenseSplit {
+  id        String  @id @default(uuid())
+  expenseId String
+  expense   Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount    Int
+
+  @@unique([expenseId, userId])
+}
+
+model ItineraryDay {
+  day          Int      @id
+  markdown     String
+  updatedAt    DateTime @updatedAt
+  lastEditorId String?
+  lastEditor   User?    @relation(fields: [lastEditorId], references: [id], onDelete: SetNull)
+}
+
+model ItineraryItem {
+  id        String    @id @default(uuid())
+  day       Int
+  startTime DateTime? // We will store specific date if possible, or just time references
+  endTime   DateTime?
+  title     String
+  content   String?
+  order     Int
+}
+
+model LocationLog {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  latitude   Float
+  longitude  Float
+  recordedAt DateTime @default(now())
+}
