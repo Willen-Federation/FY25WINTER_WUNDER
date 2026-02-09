@@ -30,7 +30,7 @@ model Expense {
   title     String
   amount    Int
   payerId   String
-  payer     User     @relation("Payer", fields: [payerId], references: [id])
+  payer     User     @relation("Payer", fields: [payerId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   receiptUrl String?
 
@@ -42,7 +42,7 @@ model ExpenseSplit {
   expenseId String
   expense   Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
   userId    String
-  user      User    @relation(fields: [userId], references: [id])
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   amount    Int
 
   @@unique([expenseId, userId])
@@ -53,7 +53,7 @@ model ItineraryDay {
   markdown     String
   updatedAt    DateTime @updatedAt
   lastEditorId String?
-  lastEditor   User?    @relation(fields: [lastEditorId], references: [id])
+  lastEditor   User?    @relation(fields: [lastEditorId], references: [id], onDelete: SetNull)
 }
 
 model ItineraryItem {
@@ -69,7 +69,7 @@ model ItineraryItem {
 model LocationLog {
   id         String   @id @default(uuid())
   userId     String
-  user       User     @relation(fields: [userId], references: [id])
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   latitude   Float
   longitude  Float
   recordedAt DateTime @default(now())

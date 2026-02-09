@@ -5,6 +5,7 @@ import "./globals.css";
 import { NavBar } from "@/components/NavBar";
 import { getSession } from "@/lib/auth";
 import { SWRegister } from "@/components/SWRegister";
+import { InstallPrompt } from "@/components/InstallPrompt";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -52,6 +53,7 @@ export default async function RootLayout({
         </div>
         <NavBar role={session?.role} />
         <SWRegister />
+        <InstallPrompt />
       </body>
     </html>
   );
