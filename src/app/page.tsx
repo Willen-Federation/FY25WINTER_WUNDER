@@ -7,29 +7,46 @@ import { Wallet, Calendar, User as UserIcon } from 'lucide-react'
 import { format } from 'date-fns'
 import NextEventCard from './NextEventCard'
 
-export default async function Home() {
-  const session = await getSession()
-  const users = await prisma.user.findMany({
-    select: { id: true, displayName: true }
-  })
+import { unstable_cache } from 'next/cache'
 
-  const now = new Date()
-  const nextEvent = await prisma.itineraryItem.findFirst({
-    where: {
-      startTime: {
-        gte: now
+const getCachedUsers = unstable_cache(
+  async () => prisma.user.findMany({
+    select: { id: true, displayName: true }
+  }),
+  ['users-list'],
+  { revalidate: 60 } // Cache for 60 seconds
+)
+
+const getCachedNextEvent = unstable_cache(
+  async () => {
+    const now = new Date()
+    return prisma.itineraryItem.findFirst({
+      where: {
+        startTime: {
+          gte: now
+        }
+      },
+      orderBy: {
+        startTime: 'asc'
       }
-    },
-    orderBy: {
-      startTime: 'asc'
-    }
-  })
+    })
+  },
+  ['next-event'],
+  { revalidate: 60 } // Cache for 60 seconds
+)
+
+export default async function Home() {
+  const [session, users, nextEvent] = await Promise.all([
+    getSession(),
+    getCachedUsers(),
+    getCachedNextEvent()
+  ])
 
   // Format dates for Client Component
   const formattedEvent = nextEvent ? {
     ...nextEvent,
-    startTime: nextEvent.startTime?.toISOString() ?? null,
-    endTime: nextEvent.endTime?.toISOString() ?? null,
+    startTime: nextEvent.startTime instanceof Date ? nextEvent.startTime.toISOString() : nextEvent.startTime,
+    endTime: nextEvent.endTime instanceof Date ? nextEvent.endTime.toISOString() : nextEvent.endTime,
   } : null
 
   return (
