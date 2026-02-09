@@ -1,5 +1,10 @@
+import dynamic from 'next/dynamic'
+import LoadingIndicator from '@/components/LoadingIndicator'
 
-import ItineraryDashboard from '@/components/ItineraryDashboard'
+const ItineraryDashboard = dynamic(() => import('@/components/ItineraryDashboard'), {
+    ssr: false,
+    loading: () => <LoadingIndicator />
+})
 
 export default function ItineraryPage() {
     return <ItineraryDashboard />
