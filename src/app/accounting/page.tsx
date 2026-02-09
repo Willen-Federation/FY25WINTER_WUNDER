@@ -1,11 +1,5 @@
-import dynamic from 'next/dynamic'
-import LoadingIndicator from '@/components/LoadingIndicator'
-
-const AccountingDashboard = dynamic(() => import('@/components/AccountingDashboard'), {
-    ssr: false,
-    loading: () => <LoadingIndicator />
-})
+import AccountingDashboardWrapper from '@/components/AccountingDashboardWrapper'
 
 export default function AccountingPage() {
-    return <AccountingDashboard />
+    return <AccountingDashboardWrapper />
 }
