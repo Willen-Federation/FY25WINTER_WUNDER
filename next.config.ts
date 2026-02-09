@@ -42,8 +42,10 @@ runtimeCaching.unshift({
 
 // Cache Page Navigations (HTML)
 runtimeCaching.unshift({
-  urlPattern: ({ request, url, sameOrigin }: { request: Request; url: URL; sameOrigin: boolean }) => {
-    if (!sameOrigin || url.pathname.startsWith('/api/') || url.pathname.startsWith('/_next/') || url.pathname.startsWith('/static/')) {
+  urlPattern: ({ request, url }: { request: Request; url: URL }) => {
+    const isSameOrigin = self.location.origin === url.origin;
+
+    if (!isSameOrigin || url.pathname.startsWith('/api/') || url.pathname.startsWith('/_next/') || url.pathname.startsWith('/static/')) {
       return false;
     }
     // Exclude RSC requests (they have their own cache rule)
