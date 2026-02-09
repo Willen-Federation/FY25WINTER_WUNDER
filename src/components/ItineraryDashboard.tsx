@@ -1,0 +1,44 @@
+
+'use client'
+
+import React, { useEffect, useState } from 'react'
+import useSWR from 'swr'
+import styles from '@/app/itinerary/itinerary.module.css'
+import { ItineraryClient } from '@/app/itinerary/ItineraryClient'
+import LoadingIndicator from './LoadingIndicator'
+
+const fetcher = (url: string) => fetch(url).then(r => r.json())
+
+export default function ItineraryDashboard() {
+    const [cachedData, setCachedData] = useState<any>(null)
+
+    useEffect(() => {
+        try {
+            const saved = localStorage.getItem('itinerary-data')
+            if (saved) setCachedData(JSON.parse(saved))
+        } catch (e) {
+            console.error('Failed to load cache', e)
+        }
+    }, [])
+
+    const { data, error } = useSWR('/api/itinerary', fetcher, {
+        fallbackData: cachedData,
+        onSuccess: (newData) => {
+            localStorage.setItem('itinerary-data', JSON.stringify(newData))
+        },
+        revalidateOnFocus: true
+    })
+
+    const displayData = data || cachedData
+
+    if (!displayData) return <LoadingIndicator />
+
+    const { days } = displayData
+
+    return (
+        <div className={styles.container}>
+            <h1 className={styles.title}>旅の計画 📅</h1>
+            <ItineraryClient days={days || []} />
+        </div>
+    )
+}
