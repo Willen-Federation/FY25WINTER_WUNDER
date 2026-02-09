@@ -41,6 +41,7 @@ export function NavBar({ role }: { role?: string }) {
                         <Link
                             key={item.href}
                             href={item.href}
+                            prefetch={true}
                             className={cn(styles.item, isActive && styles.active)}
                         >
                             <Icon className={styles.icon} size={24} />
