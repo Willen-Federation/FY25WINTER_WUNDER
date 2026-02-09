@@ -42,7 +42,7 @@ runtimeCaching.unshift({
 
 // Cache Page Navigations (HTML)
 runtimeCaching.unshift({
-  urlPattern: ({ request, url: { pathname }, sameOrigin }) => {
+  urlPattern: ({ request, url: { pathname }, sameOrigin }: { request: Request; url: URL; sameOrigin: boolean }) => {
     if (!sameOrigin || pathname.startsWith('/api/') || pathname.startsWith('/_next/') || pathname.startsWith('/static/')) {
       return false;
     }
