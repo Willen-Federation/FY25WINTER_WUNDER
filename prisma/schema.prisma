@@ -6,9 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("NETLIFY_DATABASE_URL")
-  directUrl = env("NETLIFY_DATABASE_URL_UNPOOLED")
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -32,6 +31,7 @@ model Expense {
   payerId   String
   payer     User     @relation("Payer", fields: [payerId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+  category  String   @default("その他")
   receiptUrl String?
 
   splits ExpenseSplit[]

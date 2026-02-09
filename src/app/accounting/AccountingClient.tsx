@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback, memo } from 'react'
 import { Plus, Trash2, ArrowRightLeft, Banknote, Receipt } from 'lucide-react'
 import styles from './accounting.module.css'
 import { createExpenseAction, updateExpenseAction, deleteExpenseAction } from '@/actions/accounting'
@@ -19,7 +19,10 @@ interface Expense {
     createdAt: string | Date
     payer: User
     splits: { userId: string, amount: number }[]
+    category: string
 }
+
+const CATEGORIES = ['飲食', '交通', '宿泊', 'レジャー', 'その他']
 
 interface Props {
     users: User[]
@@ -39,6 +42,7 @@ export function AccountingClient({ users, currentUserIdentity, expenses }: Props
     const [amount, setAmount] = useState('')
     const [memo, setMemo] = useState('')
     const [date, setDate] = useState('')
+    const [category, setCategory] = useState('その他')
     const [payerId, setPayerId] = useState(currentUserIdentity)
     const [receiverId, setReceiverId] = useState(users.find(u => u.id !== currentUserIdentity)?.id || users[0]?.id)
     const [splits, setSplits] = useState<Record<string, number>>({}) // userId -> amount
@@ -50,6 +54,7 @@ export function AccountingClient({ users, currentUserIdentity, expenses }: Props
         setAmount('')
         setMemo('')
         setDate(format(new Date(), 'yyyy-MM-dd'))
+        setCategory('その他')
         setPayerId(currentUserIdentity)
         setReceiverId(users.find(u => u.id !== currentUserIdentity)?.id || users[0]?.id)
         setSplits({})
@@ -57,7 +62,7 @@ export function AccountingClient({ users, currentUserIdentity, expenses }: Props
         setIsOpen(true)
     }
 
-    const handleEdit = (expense: Expense) => {
+    const handleEdit = useCallback((expense: Expense) => {
         setEditMode(true)
         setSelectedId(expense.id)
         setTitle(expense.title)
@@ -65,6 +70,7 @@ export function AccountingClient({ users, currentUserIdentity, expenses }: Props
         setPayerId(expense.payerId)
         setMemo('')
         setDate(format(new Date(expense.createdAt), 'yyyy-MM-dd'))
+        setCategory(expense.category || 'その他')
 
         // Detect if it's a transfer (optional logic, but simple check: 1 split, matches amount, title contains "送金")
         // For now, let's just assume expense mode for editing unless we store type.
@@ -93,7 +99,7 @@ export function AccountingClient({ users, currentUserIdentity, expenses }: Props
         setSplits(splitMap)
 
         setIsOpen(true)
-    }
+    }, [])
 
     const distributeEvenly = () => {
         const total = parseInt(amount) || 0
@@ -139,6 +145,7 @@ export function AccountingClient({ users, currentUserIdentity, expenses }: Props
             formData.append('title', title)
             formData.append('amount', amount)
             formData.append('payerId', payerId)
+            formData.append('category', category)
 
             const splitArray = Object.entries(splits).map(([userId, amt]) => ({
                 userId,
@@ -189,29 +196,40 @@ export function AccountingClient({ users, currentUserIdentity, expenses }: Props
         }
     }
 
+    const handleExportCSV = () => {
+        const header = ['日付', 'カテゴリー', 'タイトル', '金額', '支払者']
+        const rows = expenses.map(e => {
+            return [
+                format(new Date(e.createdAt), 'yyyy-MM-dd'),
+                e.category || 'その他',
+                `"${e.title.replace(/"/g, '""')}"`,
+                e.amount,
+                e.payer.displayName
+            ].join(',')
+        })
+        const csvContent = [header.join(','), ...rows].join('\n')
+        const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvContent], { type: 'text/csv;charset=utf-8;' })
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', 'expenses.csv')
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+    }
+
     return (
         <>
-            <div className={styles.sectionTitle}>最近の立替</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div className={styles.sectionTitle}>最近の立替</div>
+                <button onClick={handleExportCSV} style={{ fontSize: '0.8rem', padding: '5px 10px', background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: 5, cursor: 'pointer', color: '#0ea5e9' }}>
+                    CSV出力
+                </button>
+            </div>
             <div className={styles.expenseList}>
-                {expenses.length > 0 ? expenses.map(e => {
-                    const isTransfer = e.title.startsWith("送金:")
-                    return (
-                        <div key={e.id} className={styles.expenseItem} onClick={() => handleEdit(e)} style={{ cursor: 'pointer', borderLeft: isTransfer ? '4px solid #10b981' : '4px solid #3b82f6' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                <div style={{ color: isTransfer ? '#10b981' : '#3b82f6' }}>
-                                    {isTransfer ? <ArrowRightLeft size={24} /> : <Receipt size={24} />}
-                                </div>
-                                <div>
-                                    <div className={styles.expenseTitle}>{e.title}</div>
-                                    <div className={styles.expenseMeta}>
-                                        {isTransfer ? '送金者' : '支払者'}: {e.payer.displayName} • {format(new Date(e.createdAt), 'MM/dd')}
-                                    </div>
-                                </div>
-                            </div>
-                            <div className={styles.expenseAmount}>¥{e.amount.toLocaleString()}</div>
-                        </div>
-                    )
-                }) : (
+                {expenses.length > 0 ? expenses.map(e => (
+                    <ExpenseItem key={e.id} expense={e} onClick={handleEdit} />
+                )) : (
                     <div style={{ color: '#888', textAlign: 'center' }}>立替記録なし</div>
                 )}
             </div>
@@ -285,6 +303,18 @@ export function AccountingClient({ users, currentUserIdentity, expenses }: Props
                                             onChange={e => setTitle(e.target.value)}
                                             placeholder="夕食、タクシー代など"
                                         />
+                                    </div>
+                                    <div className={styles.formGroup}>
+                                        <label className={styles.label}>カテゴリー</label>
+                                        <select
+                                            className={styles.select}
+                                            value={category}
+                                            onChange={e => setCategory(e.target.value)}
+                                        >
+                                            {CATEGORIES.map(c => (
+                                                <option key={c} value={c}>{c}</option>
+                                            ))}
+                                        </select>
                                     </div>
                                     <div className={styles.formGroup}>
                                         <label className={styles.label}>支払者</label>
@@ -393,3 +423,25 @@ export function AccountingClient({ users, currentUserIdentity, expenses }: Props
         </>
     )
 }
+
+const ExpenseItem = memo(({ expense, onClick }: { expense: Expense, onClick: (e: Expense) => void }) => {
+    const isTransfer = expense.title.startsWith("送金:")
+    return (
+        <div className={styles.expenseItem} onClick={() => onClick(expense)} style={{ cursor: 'pointer', borderLeft: isTransfer ? '4px solid #10b981' : '4px solid #3b82f6' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ color: isTransfer ? '#10b981' : '#3b82f6' }}>
+                    {isTransfer ? <ArrowRightLeft size={24} /> : <Receipt size={24} />}
+                </div>
+                <div>
+                    <div className={styles.expenseTitle}>{expense.title}</div>
+                    <div className={styles.expenseMeta}>
+                        <span style={{ background: '#eee', padding: '2px 6px', borderRadius: 4, marginRight: 6, fontSize: '0.75rem' }}>{expense.category || 'その他'}</span>
+                        {(isTransfer ? '送金者' : '支払者')}: {expense.payer.displayName} • {format(new Date(expense.createdAt), 'MM/dd')}
+                    </div>
+                </div>
+            </div>
+            <div className={styles.expenseAmount}>¥{expense.amount.toLocaleString()}</div>
+        </div>
+    )
+})
+ExpenseItem.displayName = 'ExpenseItem'

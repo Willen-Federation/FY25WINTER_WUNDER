@@ -52,6 +52,7 @@ async function main() {
         data: {
             title: 'Cabin Rental',
             amount: 45000,
+            category: '宿泊',
             payerId: admin.id,
             splits: {
                 create: [
@@ -68,6 +69,7 @@ async function main() {
         data: {
             title: 'Groceries',
             amount: 12000,
+            category: '飲食',
             payerId: user1.id,
             splits: {
                 create: [
@@ -84,6 +86,7 @@ async function main() {
         data: {
             title: 'Gas',
             amount: 5000,
+            category: '交通',
             payerId: user2.id,
             splits: {
                 create: [

@@ -29,6 +29,7 @@ export async function createExpenseAction(
     const payerId = formData.get('payerId') as string || session.id
     const splitsJson = formData.get('splits') as string
     const createdAtStr = formData.get('createdAt') as string
+    const category = formData.get('category') as string || 'その他'
 
     if (!title || !amountStr || !splitsJson) {
         return { error: 'Missing Required Fields' }
@@ -46,6 +47,7 @@ export async function createExpenseAction(
                 title,
                 amount: totalAmount,
                 payerId, // Use the selected payer
+                category,
                 createdAt: createdAtStr ? new Date(createdAtStr) : undefined,
                 splits: {
                     create: splits.map(s => ({
@@ -78,6 +80,7 @@ export async function updateExpenseAction(
     const payerId = formData.get('payerId') as string
     const splitsJson = formData.get('splits') as string
     const createdAtStr = formData.get('createdAt') as string
+    const category = formData.get('category') as string || 'その他'
 
     if (!id || !title || !amountStr || !splitsJson) {
         return { error: 'Missing Required Fields' }
@@ -103,6 +106,7 @@ export async function updateExpenseAction(
                     title,
                     amount: totalAmount,
                     payerId,
+                    category,
                     createdAt: createdAtStr ? new Date(createdAtStr) : undefined,
                     splits: {
                         create: splits.map(s => ({

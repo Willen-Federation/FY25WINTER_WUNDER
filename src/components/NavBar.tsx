@@ -1,5 +1,6 @@
 'use client'
 
+import { useMemo } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Home, Wallet, Calendar, MapPin, Settings } from 'lucide-react'
@@ -12,16 +13,19 @@ export function NavBar({ role }: { role?: string }) {
     // Hide nav on login page
     if (pathname === '/login') return null
 
-    const navItems = [
-        { href: '/', label: 'ホーム', icon: Home },
-        { href: '/accounting', label: '立替', icon: Wallet },
-        { href: '/itinerary', label: '計画', icon: Calendar },
-        { href: '/location', label: 'マップ', icon: MapPin },
-    ]
+    const navItems = useMemo(() => {
+        const items = [
+            { href: '/', label: 'ホーム', icon: Home },
+            { href: '/accounting', label: '立替', icon: Wallet },
+            { href: '/itinerary', label: '計画', icon: Calendar },
+            { href: '/location', label: 'マップ', icon: MapPin },
+        ]
 
-    if (role === 'ADMIN') {
-        navItems.push({ href: '/admin', label: '管理', icon: Settings })
-    }
+        if (role === 'ADMIN') {
+            items.push({ href: '/admin', label: '管理', icon: Settings })
+        }
+        return items
+    }, [role])
 
     return (
         <>
