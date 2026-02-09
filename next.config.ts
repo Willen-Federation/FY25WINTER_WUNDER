@@ -42,11 +42,16 @@ runtimeCaching.unshift({
 
 // Cache Page Navigations (HTML)
 runtimeCaching.unshift({
-  urlPattern: ({ request, url: { pathname }, sameOrigin }: { request: Request; url: URL; sameOrigin: boolean }) => {
-    if (!sameOrigin || pathname.startsWith('/api/') || pathname.startsWith('/_next/') || pathname.startsWith('/static/')) {
+  urlPattern: ({ request, url, sameOrigin }: { request: Request; url: URL; sameOrigin: boolean }) => {
+    if (!sameOrigin || url.pathname.startsWith('/api/') || url.pathname.startsWith('/_next/') || url.pathname.startsWith('/static/')) {
       return false;
     }
-    return request.mode === 'navigate';
+    // Exclude RSC requests (they have their own cache rule)
+    if (url.searchParams.has('_rsc')) {
+      return false;
+    }
+    // Cache all other same-origin requests to page routes (HTML), allowing background fetch to warm the cache
+    return true;
   },
   handler: 'StaleWhileRevalidate',
   options: {
