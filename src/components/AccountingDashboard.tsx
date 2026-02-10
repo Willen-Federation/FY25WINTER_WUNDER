@@ -62,23 +62,23 @@ export default function AccountingDashboard() {
                         <span>自己負担内訳 (精算除く)</span>
                         <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#333' }}>
                             <span style={{ fontSize: '0.8rem', color: '#666', fontWeight: 'normal', marginRight: 5 }}>合計:</span>
-                            ¥{Object.values(displayData.categoryTotals).reduce((a: any, b: any) => a + b, 0).toLocaleString()}
+                            ¥{Object.values(displayData.categoryTotals as Record<string, number>).reduce((a: number, b: number) => a + b, 0).toLocaleString()}
                         </span>
                     </h3>
 
                     {/* Graph */}
                     <div style={{ display: 'flex', height: 24, borderRadius: 12, overflow: 'hidden', marginBottom: 15, background: '#f1f5f9' }}>
                         {(() => {
-                            const total = Object.values(displayData.categoryTotals).reduce((a: any, b: any) => a + b, 0) as number;
+                            const total = Object.values(displayData.categoryTotals as Record<string, number>).reduce((a: number, b: number) => a + b, 0);
                             if (total === 0) return <div style={{ width: '100%', height: '100%', background: '#e2e8f0' }} />;
 
                             const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#6366f1'];
                             let colorIndex = 0;
 
-                            return Object.entries(displayData.categoryTotals)
-                                .sort(([, a], [, b]) => (b as number) - (a as number))
+                            return Object.entries(displayData.categoryTotals as Record<string, number>)
+                                .sort(([, a], [, b]) => b - a)
                                 .map(([cat, amount]) => {
-                                    const percent = ((amount as number) / total) * 100;
+                                    const percent = (amount / total) * 100;
                                     const color = COLORS[colorIndex++ % COLORS.length];
                                     return (
                                         <div key={cat} style={{ width: `${percent}%`, height: '100%', background: color }} title={`${cat}: ¥${(amount as number).toLocaleString()}`} />
@@ -90,19 +90,19 @@ export default function AccountingDashboard() {
                     {/* Legend / List */}
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
                         {(() => {
-                            const total = Object.values(displayData.categoryTotals).reduce((a: any, b: any) => a + b, 0) as number;
+                            const total = Object.values(displayData.categoryTotals as Record<string, number>).reduce((a: number, b: number) => a + b, 0);
                             const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#6366f1'];
                             let colorIndex = 0;
 
-                            return Object.entries(displayData.categoryTotals)
-                                .sort(([, a], [, b]) => (b as number) - (a as number))
+                            return Object.entries(displayData.categoryTotals as Record<string, number>)
+                                .sort(([, a], [, b]) => b - a)
                                 .map(([cat, amount]) => {
                                     const color = COLORS[colorIndex++ % COLORS.length];
                                     return (
                                         <div key={cat} style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#f8fafc', padding: '6px 10px', borderRadius: 20, border: '1px solid #f1f5f9' }}>
                                             <div style={{ width: 10, height: 10, borderRadius: '50%', background: color }}></div>
                                             <span style={{ fontSize: '0.85rem', color: '#475569', fontWeight: 500 }}>{cat}</span>
-                                            <span style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#334155' }}>¥{(amount as number).toLocaleString()}</span>
+                                            <span style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#334155' }}>¥{amount.toLocaleString()}</span>
                                         </div>
                                     );
                                 });
