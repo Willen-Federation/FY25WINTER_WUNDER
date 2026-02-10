@@ -23,7 +23,7 @@ export default function AccountingDashboard() {
         return null
     })
 
-    const { data, error } = useSWR('/api/accounting', fetcher, {
+    const { data, error, mutate } = useSWR('/api/accounting', fetcher, {
         fallbackData: cachedData,
         onSuccess: (newData) => {
             localStorage.setItem('accounting-data', JSON.stringify(newData))
@@ -37,10 +37,20 @@ export default function AccountingDashboard() {
 
     const { balances, clientUsers, clientExpenses, currentUserIdentity } = displayData
 
+    console.log('[Dashboard] Data:', displayData) // Client debug log
+
     return (
         <div className={styles.container}>
             {error && <OfflineWarning />}
-            <h1 className={styles.header}>会計 & 精算 💰</h1>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h1 className={styles.header}>会計 & 精算 💰</h1>
+                <button onClick={() => mutate()} style={{ background: 'none', border: '1px solid #ccc', borderRadius: 4, padding: '4px 8px', fontSize: '0.8rem', cursor: 'pointer' }}>
+                    Refetch
+                </button>
+            </div>
+            {/* Debug Info (Hidden in prod) */}
+            {/* <div style={{ fontSize: '0.7rem', color: '#aaa' }}>user: {currentUserIdentity}</div> */}
+
 
             <section className={styles.summaryGrid}>
                 {balances?.map((u: any) => (
