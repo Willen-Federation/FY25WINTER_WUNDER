@@ -155,26 +155,32 @@ export function AccountingClient({ users, currentUserIdentity, expenses }: Props
             formData.append('splits', JSON.stringify(splitArray))
         }
 
-        let res;
-        if (editMode && selectedId) {
-            formData.append('id', selectedId)
-            // @ts-ignore
-            res = await updateExpenseAction({}, formData)
-        } else {
-            // @ts-ignore
-            res = await createExpenseAction({}, formData)
-        }
+        try {
+            let res;
+            if (editMode && selectedId) {
+                formData.append('id', selectedId)
+                // @ts-ignore
+                res = await updateExpenseAction({}, formData)
+            } else {
+                // @ts-ignore
+                res = await createExpenseAction({}, formData)
+            }
 
-        setIsSubmitting(false)
-        if (res?.success) {
-            setIsOpen(false)
-            // Reset states properly
-            setTitle('')
-            setAmount('')
-            setMemo('')
-            setSplits({})
-        } else {
-            alert(res?.error || 'Error saving')
+            if (res?.success) {
+                setIsOpen(false)
+                // Reset states properly
+                setTitle('')
+                setAmount('')
+                setMemo('')
+                setSplits({})
+            } else {
+                alert(res?.error || 'Error saving')
+            }
+        } catch (e) {
+            console.error('Submission failed', e)
+            alert('保存に失敗しました。ネットワーク接続を確認してください。')
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
