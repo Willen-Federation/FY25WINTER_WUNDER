@@ -80,10 +80,26 @@ export async function GET() {
         )
     }
 
-    const clientExpenses = filteredExpenses.map(e => ({
-        ...e,
-        createdAt: e.createdAt.toISOString() // Serialize Date
-    }))
+    const clientExpenses = filteredExpenses.map(e => {
+        // Debug calculation per item
+        const mySplit = e.splits.find(s => s.userId === currentUserId)
+        const totalSplits = e.splits.reduce((sum, s) => sum + s.amount, 0)
+        const residual = (e.payerId === currentUserId) ? (e.amount - totalSplits) : 0
+        const consumption = (mySplit?.amount || 0) + (residual > 0 ? residual : 0)
+
+        return {
+            ...e,
+            createdAt: e.createdAt.toISOString(), // Serialize Date
+            _debug: {
+                consumption,
+                isPayer: e.payerId === currentUserId,
+                payerId: e.payerId,
+                myId: currentUserId,
+                mySplit: mySplit?.amount || 0,
+                residual
+            }
+        }
+    })
 
     // Calculate My Category Totals (What I consumed)
     // Group by category, sum up my split amount + residual if payer
