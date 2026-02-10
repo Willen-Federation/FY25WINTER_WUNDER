@@ -86,13 +86,30 @@ export async function GET() {
     }))
 
     // Calculate My Category Totals (What I consumed)
-    // Group by category, sum up my split amount
+    // Group by category, sum up my split amount + residual if payer
     const categoryTotals: Record<string, number> = {}
     expenses.forEach(e => {
+        // Exclude transfers from expense totals
+        if (e.title.startsWith('送金:')) return
+
+        let myConsumption = 0
+
+        // 1. Explicit Split
         const mySplit = e.splits.find(s => s.userId === currentUserId)
-        if (mySplit && mySplit.amount > 0) {
+        if (mySplit) myConsumption += mySplit.amount
+
+        // 2. Residual if I am Payer (Total Amount - Sum of All Splits)
+        if (e.payerId === currentUserId) {
+            const totalSplits = e.splits.reduce((sum, s) => sum + s.amount, 0)
+            const residual = e.amount - totalSplits
+            if (residual > 0) {
+                myConsumption += residual
+            }
+        }
+
+        if (myConsumption > 0) {
             const cat = e.category || 'その他'
-            categoryTotals[cat] = (categoryTotals[cat] || 0) + mySplit.amount
+            categoryTotals[cat] = (categoryTotals[cat] || 0) + myConsumption
         }
     })
 
