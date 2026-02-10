@@ -48,7 +48,7 @@ export async function createExpenseAction(
                 amount: totalAmount,
                 payerId, // Use the selected payer
                 category,
-                createdAt: createdAtStr ? new Date(createdAtStr) : undefined,
+                createdAt: (createdAtStr && !isNaN(Date.parse(createdAtStr))) ? new Date(createdAtStr) : new Date(),
                 splits: {
                     create: splits.map(s => ({
                         userId: s.userId,
