@@ -1,11 +1,11 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useEffect, useState, useTransition } from 'react'
+import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import styles from './location.module.css'
 import { saveLocationAction } from '@/actions/location'
-import { MapPin, RotateCw } from 'lucide-react'
+import { MapPin } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const Map = dynamic(() => import('@/components/Map'), {
@@ -20,7 +20,8 @@ interface Props {
 
 export function LocationClient({ locations, center }: Props) {
     const [loading, setLoading] = useState(false)
-    const [isPending, startTransition] = useTransition()
+
+
     const router = useRouter()
 
     const handleManualLocation = () => {
@@ -40,11 +41,7 @@ export function LocationClient({ locations, center }: Props) {
         })
     }
 
-    const handleRefresh = () => {
-        startTransition(() => {
-            router.refresh()
-        })
-    }
+
 
     useEffect(() => {
         const sendLocation = () => {
@@ -78,24 +75,17 @@ export function LocationClient({ locations, center }: Props) {
     return (
         <div className={styles.wrapper}>
             <div className={styles.controls}>
-                <button className={cn(styles.btn, styles.secondary)} onClick={handleRefresh} disabled={isPending}>
-                    <RotateCw size={20} className={isPending ? "spin" : ""} style={isPending ? { animation: 'spin 1s linear infinite' } : {}} />
-                    {isPending ? '更新中...' : '他人の位置を更新'}
-                </button>
+
                 <button className={styles.btn} onClick={handleManualLocation} disabled={loading}>
                     <MapPin size={20} />
                     {loading ? '測位中...' : "現在地を更新"}
                 </button>
+
             </div>
             <div className={styles.mapContainer}>
                 <Map locations={locations} center={center} />
             </div>
-            <style jsx global>{`
-                @keyframes spin {
-                    from { transform: rotate(0deg); }
-                    to { transform: rotate(360deg); }
-                }
-            `}</style>
+
         </div>
     )
 }

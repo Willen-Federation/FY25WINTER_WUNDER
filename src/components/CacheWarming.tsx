@@ -43,7 +43,11 @@ export default function CacheWarming() {
 
             // Delay slightly to not impact initial load
             const timer = setTimeout(() => {
-                requestIdleCallback ? requestIdleCallback(warmCache) : setTimeout(warmCache, 2000)
+                if ('requestIdleCallback' in window) {
+                    window.requestIdleCallback(() => warmCache())
+                } else {
+                    setTimeout(warmCache, 2000)
+                }
             }, 3000)
 
             return () => clearTimeout(timer)

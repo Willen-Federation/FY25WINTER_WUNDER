@@ -3,7 +3,7 @@
 
 import { deleteExpenseAction, clearLocationsAction, createUserAction, deleteUserAction, updateUserAction } from '@/actions/admin'
 import { useState } from 'react'
-import { Pencil, Trash2, X } from 'lucide-react'
+import { Pencil, Trash2, X, MapPin } from 'lucide-react'
 
 interface User {
     id: string
@@ -174,6 +174,13 @@ export function AdminClient({ expenses, users }: { expenses: any[], users: User[
                                 </div>
                             </div>
                             <div style={{ display: 'flex', gap: 10 }}>
+                                <a
+                                    href={`/api/location/${u.id}/gpx`}
+                                    target="_blank"
+                                    style={{ background: '#3b82f6', color: 'white', border: 'none', padding: '5px 10px', borderRadius: 5, cursor: 'pointer', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: 5, textDecoration: 'none' }}
+                                >
+                                    <MapPin size={14} /> GPX
+                                </a>
                                 <button
                                     onClick={() => handleEditUser(u)}
                                     disabled={isDeleting || (editingUserId === u.id)}

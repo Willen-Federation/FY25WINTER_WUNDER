@@ -70,15 +70,37 @@ export async function GET() {
         displayName: u.displayName
     }))
 
-    const clientExpenses = expenses.map(e => ({
+    // Filter expenses based on role
+    let filteredExpenses = expenses;
+    // @ts-ignore
+    if (session?.role !== 'ADMIN') {
+        filteredExpenses = expenses.filter(e =>
+            e.payerId === currentUserId ||
+            e.splits.some(s => s.userId === currentUserId)
+        )
+    }
+
+    const clientExpenses = filteredExpenses.map(e => ({
         ...e,
         createdAt: e.createdAt.toISOString() // Serialize Date
     }))
+
+    // Calculate My Category Totals (What I consumed)
+    // Group by category, sum up my split amount
+    const categoryTotals: Record<string, number> = {}
+    expenses.forEach(e => {
+        const mySplit = e.splits.find(s => s.userId === currentUserId)
+        if (mySplit && mySplit.amount > 0) {
+            const cat = e.category || 'その他'
+            categoryTotals[cat] = (categoryTotals[cat] || 0) + mySplit.amount
+        }
+    })
 
     return NextResponse.json({
         balances,
         clientUsers,
         clientExpenses,
-        currentUserIdentity: currentUserId
+        currentUserIdentity: currentUserId,
+        categoryTotals
     })
 }
