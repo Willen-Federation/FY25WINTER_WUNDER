@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo, useCallback, memo } from 'react'
-import { Plus, Trash2, ArrowRightLeft, Banknote, Receipt } from 'lucide-react'
+import { Plus, Trash2, ArrowRightLeft, Banknote, Receipt, Utensils, TrainFront, BedDouble, Tent, CircleHelp } from 'lucide-react'
 import styles from './accounting.module.css'
 import { createExpenseAction, updateExpenseAction, deleteExpenseAction } from '@/actions/accounting'
 import { format } from 'date-fns'
@@ -430,13 +430,33 @@ export function AccountingClient({ users, currentUserIdentity, expenses }: Props
     )
 }
 
+const getCategoryIcon = (category: string) => {
+    switch (category) {
+        case '飲食': return <Utensils size={20} />
+        case '交通': return <TrainFront size={20} />
+        case '宿泊': return <BedDouble size={20} />
+        case 'レジャー': return <Tent size={20} />
+        default: return <CircleHelp size={20} />
+    }
+}
+
 const ExpenseItem = memo(({ expense, onClick }: { expense: Expense, onClick: (e: Expense) => void }) => {
     const isTransfer = expense.title.startsWith("送金:")
     return (
         <div className={styles.expenseItem} onClick={() => onClick(expense)} style={{ cursor: 'pointer', borderLeft: isTransfer ? '4px solid #10b981' : '4px solid #3b82f6' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ color: isTransfer ? '#10b981' : '#3b82f6' }}>
-                    {isTransfer ? <ArrowRightLeft size={24} /> : <Receipt size={24} />}
+                <div style={{
+                    color: isTransfer ? '#10b981' : '#3b82f6',
+                    width: 40,
+                    height: 40,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: isTransfer ? '#d1fae5' : '#dbeafe',
+                    borderRadius: '50%',
+                    flexShrink: 0
+                }}>
+                    {isTransfer ? <ArrowRightLeft size={20} /> : getCategoryIcon(expense.category)}
                 </div>
                 <div>
                     <div className={styles.expenseTitle}>{expense.title}</div>

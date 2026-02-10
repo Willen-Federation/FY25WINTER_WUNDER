@@ -37,17 +37,10 @@ export default function AccountingDashboard() {
 
     const { balances, clientUsers, clientExpenses, currentUserIdentity } = displayData
 
-    console.log('[Dashboard] Data:', displayData) // Client debug log
-
     return (
         <div className={styles.container}>
             {error && <OfflineWarning />}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h1 className={styles.header}>会計 & 精算 💰</h1>
-                <button onClick={() => mutate()} style={{ background: 'none', border: '1px solid #ccc', borderRadius: 4, padding: '4px 8px', fontSize: '0.8rem', cursor: 'pointer' }}>
-                    Refetch
-                </button>
-            </div>
+            <h1 className={styles.header}>会計 & 精算 💰</h1>
             {/* Debug Info (Hidden in prod) */}
             {/* <div style={{ fontSize: '0.7rem', color: '#aaa' }}>user: {currentUserIdentity}</div> */}
 

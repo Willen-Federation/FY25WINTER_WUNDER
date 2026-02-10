@@ -80,33 +80,14 @@ export async function GET() {
         )
     }
 
-    const clientExpenses = filteredExpenses.map(e => {
-        // Debug calculation per item
-        const mySplit = e.splits.find(s => s.userId === currentUserId)
-        const totalSplits = e.splits.reduce((sum, s) => sum + s.amount, 0)
-        const residual = (e.payerId === currentUserId) ? (e.amount - totalSplits) : 0
-        const consumption = (mySplit?.amount || 0) + (residual > 0 ? residual : 0)
-
-        return {
-            ...e,
-            createdAt: e.createdAt.toISOString(), // Serialize Date
-            _debug: {
-                consumption,
-                isPayer: e.payerId === currentUserId,
-                payerId: e.payerId,
-                myId: currentUserId,
-                mySplit: mySplit?.amount || 0,
-                residual
-            }
-        }
-    })
+    const clientExpenses = filteredExpenses.map(e => ({
+        ...e,
+        createdAt: e.createdAt.toISOString() // Serialize Date
+    }))
 
     // Calculate My Category Totals (What I consumed)
     // Group by category, sum up my split amount + residual if payer
     const categoryTotals: Record<string, number> = {}
-
-    // Debug Logging
-    console.log(`[AccountingAPI] Calculating for User: ${currentUserId}`)
 
     expenses.forEach(e => {
         // Exclude transfers from expense totals
@@ -119,18 +100,12 @@ export async function GET() {
         if (mySplit) myConsumption += mySplit.amount
 
         // 2. Residual if I am Payer (Total Amount - Sum of All Splits)
-        let residual = 0
         if (e.payerId === currentUserId) {
             const totalSplits = e.splits.reduce((sum, s) => sum + s.amount, 0)
-            residual = e.amount - totalSplits
+            const residual = e.amount - totalSplits
             if (residual > 0) {
                 myConsumption += residual
             }
-        }
-
-        // Detailed Log for debugging specific items (can remove later)
-        if (myConsumption > 0 || e.payerId === currentUserId || e.splits.some(s => s.userId === currentUserId)) {
-            console.log(`[Expense] ID=${e.id.slice(0, 4)} Title="${e.title}" Amount=${e.amount} Payer=${e.payerId === currentUserId ? 'ME' : 'OTHER'} MySplit=${mySplit?.amount || 0} Residual=${residual} Consumption=${myConsumption}`)
         }
 
         if (myConsumption > 0) {
@@ -138,8 +113,6 @@ export async function GET() {
             categoryTotals[cat] = (categoryTotals[cat] || 0) + myConsumption
         }
     })
-
-    console.log('[AccountingAPI] Final Totals:', categoryTotals)
 
     return NextResponse.json({
         balances,
