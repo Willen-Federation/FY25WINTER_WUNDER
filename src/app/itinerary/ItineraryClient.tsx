@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import { Printer } from 'lucide-react'
 
 interface ItineraryItemProps {
     id: string
@@ -51,24 +52,38 @@ export function ItineraryClient({ days }: Props) {
 
     const [selectedItem, setSelectedItem] = useState<ItineraryItemProps | null>(null)
 
-    // ...
+
 
     return (
         <div>
-            <div className={styles.tabs}>
-                {[1, 2, 3].map(d => (
-                    <button
-                        key={d}
-                        className={cn(styles.tab, activeDay === d && styles.active)}
-                        onClick={() => {
-                            setActiveDay(d)
-                            const dData = days.find(day => day.day === d)
-                            setMarkdown(dData?.markdown || '')
-                        }}
-                    >
-                        Day {d}
-                    </button>
-                ))}
+            <div className="print-hide" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 20, marginBottom: 30 }}>
+                <div className={styles.tabs} style={{ marginBottom: 0 }}>
+                    {[1, 2, 3].map(d => (
+                        <button
+                            key={d}
+                            className={cn(styles.tab, activeDay === d && styles.active)}
+                            onClick={() => {
+                                setActiveDay(d)
+                                const dData = days.find(day => day.day === d)
+                                setMarkdown(dData?.markdown || '')
+                            }}
+                        >
+                            Day {d}
+                        </button>
+                    ))}
+                </div>
+                <button
+                    onClick={() => window.print()}
+                    style={{
+                        display: 'flex', alignItems: 'center', gap: 6,
+                        padding: '8px 16px', borderRadius: 20, border: 'none',
+                        background: '#333', color: 'white', cursor: 'pointer', fontWeight: 'bold'
+                    }}
+                    className="print-hide"
+                >
+                    <Printer size={18} />
+                    PDF出力
+                </button>
             </div>
 
             <div className={styles.grid}>
@@ -100,7 +115,7 @@ export function ItineraryClient({ days }: Props) {
                 </div>
 
                 <div className={styles.timeline}>
-                    <h3>タイムライン</h3>
+                    <h3>タイムライン (Day {activeDay})</h3>
                     {currentDayData?.items && currentDayData.items.length > 0 ? (
                         currentDayData.items.map((item) => (
                             <div key={item.id} className={styles.timelineItem} onClick={() => setSelectedItem(item)} style={{ cursor: 'pointer' }}>
@@ -109,6 +124,17 @@ export function ItineraryClient({ days }: Props) {
                                     {item.endTime ? ` - ${format(new Date(item.endTime), 'HH:mm')}` : ''}
                                 </div>
                                 <div className={styles.itemTitle}>{item.title}</div>
+                                {/* Hidden Content for Print */}
+                                <div className="print-content" style={{ display: 'none' }}>
+                                    <ReactMarkdown
+                                        remarkPlugins={[remarkGfm]}
+                                        components={{
+                                            a: ({ node, ...props }) => <a {...props} style={{ color: '#333', textDecoration: 'underline' }} />
+                                        }}
+                                    >
+                                        {item.content || ''}
+                                    </ReactMarkdown>
+                                </div>
                             </div>
                         ))
                     ) : (
@@ -143,6 +169,66 @@ export function ItineraryClient({ days }: Props) {
                     </div>
                 </div>
             )}
+
+            <style jsx global>{`
+                @media print {
+                    /* Hide specific elements */
+                    .${styles.editorSection}, 
+                    .${styles.tabs}, 
+                    .print-hide, 
+                    .${styles.modalOverlay} {
+                        display: none !important;
+                    }
+
+                    /* Layout adjustments */
+                    body {
+                        background: white;
+                    }
+                    
+                    /* Expand timeline */
+                    .${styles.grid} {
+                        display: block !important;
+                    }
+                    .${styles.timeline} {
+                        width: 100% !important;
+                        padding: 0 !important;
+                        margin: 0 !important;
+                    }
+
+                    /* Show content */
+                    .print-content {
+                        display: block !important;
+                        margin-top: 12px;
+                        padding-top: 8px;
+                        border-top: 1px  dashed #ddd;
+                        color: #333;
+                        font-size: 0.9rem;
+                    }
+
+                    /* Improve typography for print */
+                    .print-content p {
+                        margin-bottom: 6px;
+                    }
+                    .print-content ul {
+                        margin-left: 1.2em;
+                    }
+
+                    /* Ensure background graphics (like timeline dots) are printed if possible, 
+                       though standard browser settings usually disable background colors.
+                       We try to enforce simple styles. 
+                    */
+                    .${styles.timelineItem} {
+                        break-inside: avoid;
+                        border-left-color: #ccc !important;
+                        padding-left: 15px !important;
+                        margin-bottom: 20px !important;
+                    }
+                    /* Add print-friendly text color */
+                    * {
+                        color: #000 !important;
+                    }
+                }
+            `}</style>
         </div>
     )
 }

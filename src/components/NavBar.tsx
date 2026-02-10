@@ -29,8 +29,8 @@ export function NavBar({ role }: { role?: string }) {
 
     return (
         <>
-            <div className={styles.spacer} />
-            <nav className={styles.nav}>
+            <div className={cn(styles.spacer, 'print-hide')} />
+            <nav className={cn(styles.nav, 'print-hide')}>
                 {navItems.map((item) => {
                     const Icon = item.icon
                     const isActive = item.href === '/'

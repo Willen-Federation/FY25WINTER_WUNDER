@@ -52,7 +52,7 @@ export function InstallPrompt() {
     if (!isVisible) return null
 
     return (
-        <div style={{
+        <div className="print-hide" style={{
             position: 'fixed',
             bottom: 80, // Above NavBar
             left: 16,

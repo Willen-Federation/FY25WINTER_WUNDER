@@ -52,3 +52,9 @@ p {
   line-height: 1.6;
   margin-bottom: 1rem;
 }
+
+@media print {
+  .print-hide {
+    display: none !important;
+  }
+}
